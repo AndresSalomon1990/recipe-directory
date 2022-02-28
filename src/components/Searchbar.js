@@ -8,7 +8,7 @@ export default function Searchbar() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    history.push(`/search?$q=${term}`); // redirect to the Search page with a query parameter
+    history.push(`/search?q=${term}`); // redirect to the Search page with a query parameter
   };
 
   return (
