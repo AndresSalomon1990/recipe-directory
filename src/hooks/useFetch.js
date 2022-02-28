@@ -1,18 +1,33 @@
 import { useState, useEffect } from 'react';
 
-export const useFetch = (url) => {
+export const useFetch = (url, method = 'GET') => {
   const [data, setData] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState(null);
+  const [options, setOptions] = useState(null); // options to pass to fetch in case it is a POST request
+
+  // this method is going to be called from the component with the body data
+  const postData = (postData) => {
+    setOptions({
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postData),
+    });
+  };
 
   useEffect(() => {
     const controller = new AbortController();
 
-    const fetchData = async () => {
+    const fetchData = async (fetchOptions) => {
       setIsPending(true);
 
       try {
-        const res = await fetch(url, { signal: controller.signal });
+        const res = await fetch(url, {
+          ...fetchOptions,
+          signal: controller.signal,
+        });
         if (!res.ok) {
           throw new Error(res.statusText);
         }
@@ -31,12 +46,21 @@ export const useFetch = (url) => {
       }
     };
 
-    fetchData();
+    // check what kind of request is going to be made
+    if (method === 'GET') {
+      fetchData();
+    }
+    
+    if (method === 'POST' && options) {
+      // this if is going to be true once the postData method is called, not when useFetch is called the first time
+      // because it will change the options variable and it will trigger useEffect again
+      fetchData(options);
+    }
 
     return () => {
       controller.abort();
     };
-  }, [url]);
+  }, [url, method, options]);
 
-  return { data, isPending, error };
+  return { data, isPending, error, postData };
 };
