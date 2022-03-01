@@ -10,7 +10,7 @@ export default function Create() {
   const [newIngredient, setNewIngredient] = useState(''); // track 1 ingredient
   const [ingredients, setIngredients] = useState([]); // track all ingredients
   const ingredientInput = useRef(); // to focus the input after adding an ingredient
-  const { postData, data, error } = useFetch(
+  const { postData, data } = useFetch(
     'http://localhost:3000/recipes',
     'POST'
   );
