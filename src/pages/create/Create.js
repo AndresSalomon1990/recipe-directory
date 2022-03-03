@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useFetch } from '../../hooks/useFetch';
+import { projectFirestore } from '../../firebase/config';
 import './Create.css';
 
 export default function Create() {
@@ -10,20 +10,23 @@ export default function Create() {
   const [newIngredient, setNewIngredient] = useState(''); // track 1 ingredient
   const [ingredients, setIngredients] = useState([]); // track all ingredients
   const ingredientInput = useRef(); // to focus the input after adding an ingredient
-  const { postData, data } = useFetch(
-    'http://localhost:3000/recipes',
-    'POST'
-  );
   const history = useHistory();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    postData({
+    const doc = {
       title,
       ingredients,
       method,
       cookingTime: cookingTime + ' minutes',
-    });
+    };
+
+    try {
+      await projectFirestore.collection('recipes').add(doc);
+      history.push('/');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleAdd = (e) => {
@@ -38,14 +41,6 @@ export default function Create() {
     setNewIngredient('');
     ingredientInput.current.focus();
   };
-
-  // redirect the user to home page after submitting a new recipe
-  useEffect(() => {
-    if (data) {
-      // only if the POST request return data, redirect the user
-      history.push('/');
-    }
-  }, [data, history]);
 
   return (
     <div className='create'>
