@@ -14,24 +14,34 @@ export default function Recipe() {
   useEffect(() => {
     setIsPending(true);
 
-    projectFirestore
+    const unsub = projectFirestore
       .collection('recipes')
       .doc(id)
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
+      .onSnapshot(
+        (doc) => {
+          if (doc.exists) {
+            setIsPending(false);
+            setRecipe(doc.data());
+          } else {
+            setIsPending(false);
+            setError('Could not find that recipe');
+          }
+        },
+        (err) => {
+          setError(err.message);
           setIsPending(false);
-          setRecipe(doc.data());
-        } else {
-          setIsPending(false);
-          setError('Could not find that recipe');
         }
-      })
-      .catch((e) => {
-        setError(e.message);
-        setIsPending(false);
-      });
+      );
+
+    return () => unsub();
   }, [id]);
+
+  const handleClick = () => {
+    // generic update to show functionality
+    projectFirestore.collection('recipes').doc(id).update({
+      title: 'Something different',
+    });
+  };
 
   return (
     <div className={`recipe ${mode}`}>
@@ -47,6 +57,7 @@ export default function Recipe() {
             ))}
           </ul>
           <p className='method'>{recipe.method}</p>
+          <button onClick={handleClick}>Update me</button>
         </>
       )}
     </div>
