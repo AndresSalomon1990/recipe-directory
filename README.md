@@ -8,4 +8,4 @@ Sample project showing recipes made with React. You can change Navbar color and 
 - React Context
 - React Reducer
 - CSS
-- Firebase Firestore - Real-time data
+- Firebase Firestore - Real-time data (v8.5)
