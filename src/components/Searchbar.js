@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Searchbar.css';
 
 export default function Searchbar() {
   const [term, setTerm] = useState('');
-  const history = useHistory();
+  const navegate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    history.push(`/search?q=${term}`); // redirect to the Search page with a query parameter
+    navegate(`/search?q=${term}`); // redirect to the Search page with a query parameter
   };
 
   return (
